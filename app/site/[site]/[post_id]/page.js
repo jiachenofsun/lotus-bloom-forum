@@ -16,6 +16,7 @@ export default async function PostPage({ params }) {
     <div>
       <h1>Post ID: {post_id}</h1>
       <div>
+        <h2>hi</h2>
         <p>
           This is the page for {post_id} on {site}
         </p>
