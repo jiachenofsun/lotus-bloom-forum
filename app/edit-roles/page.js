@@ -67,6 +67,9 @@ export default function EditRoles() {
     throw new Error("User should be authenticated");
   }
 
+  const roles = user["https://www.lotusbloomfamily.org/forum/roles"] || [];
+  console.log("User roles:", roles);
+
   // Check if the user email has the required domain for Admin role
   const isEligibleForAdmin =
     user.email && user.email.endsWith("@lotusbloomfamily.org");
