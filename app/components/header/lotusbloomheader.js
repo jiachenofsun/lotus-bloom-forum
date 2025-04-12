@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import styles from "./lotusbloomheader.module.css";
+import styles from "./LotusBloomHeader.module.css";
 
 export default function Header() {
   const [tocOpen, setTocOpen] = useState(false);
