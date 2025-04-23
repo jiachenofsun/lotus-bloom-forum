@@ -10,11 +10,14 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import CommentTab from "@/app/components/CommentTab";
+import { getComments } from "@/app/actions/db-actions";
 
 export default async function PostPage({ params }) {
   const p = await params;
   const site = p.site;
   const post_id = p.post_id;
+
+  const comments = await getComments(post_id);
 
   return (
     <div>
@@ -75,7 +78,7 @@ export default async function PostPage({ params }) {
             <img src={"/placeholder.jpg"} width="50%" />
           </div>
 
-          <CommentTab />
+          <CommentTab comments={comments} postid={post_id} />
         </div>
       </div>
     </div>

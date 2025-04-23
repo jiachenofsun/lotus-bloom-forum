@@ -2,30 +2,33 @@
 
 import { useState } from "react";
 import styles from "./CommentTab.module.css";
+import { postComments } from "@/app/actions/db-actions";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
-export default function CommentTab() {
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "Deven Mital",
-      date: "March 1, 2025",
-      text: "This is the first comment.",
-    },
-    {
-      id: 2,
-      author: "Deven Mital",
-      date: "March 1, 2025",
-      text: "Another comment here!",
-    },
-  ]);
+export default function CommentTab({ comments, postid }) {
+  //   const [comments, setComments] = useState([
+  //     {
+  //       id: 1,
+  //       author: "Deven Mital",
+  //       date: "March 1, 2025",
+  //       text: "This is the first comment.",
+  //     },
+  //     {
+  //       id: 2,
+  //       author: "Deven Mital",
+  //       date: "March 1, 2025",
+  //       text: "Another comment here!",
+  //     },
+  //   ]);
   const [newComment, setNewComment] = useState("");
+  const { user } = useUser();
 
-  const handleSubmit = () => {
+  async function handleSubmit() {
     if (newComment.trim() === "") return;
 
     const newEntry = {
       id: Date.now(),
-      author: "Deven Mital", // Hardcoded for now
+      author: user.name, // Hardcoded for now
       date: new Date().toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
@@ -34,9 +37,10 @@ export default function CommentTab() {
       text: newComment.trim(),
     };
 
-    setComments([...comments, newEntry]);
+    const result = await postComments(postid, user.sub, newEntry.text);
+    //setComments([...comments, newEntry]);
     setNewComment("");
-  };
+  }
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSubmit();

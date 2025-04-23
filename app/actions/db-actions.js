@@ -20,3 +20,32 @@ export async function getPosts(site) {
     return [];
   }
 }
+
+export async function getComments(postid) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "SELECT * FROM comments WHERE post_id = $1",
+      [postid],
+    );
+    client.release();
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+}
+export async function postComments(postid, authorid, text) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "INSERT INTO comments (post_id, author_id, text) values ($1, $2, $3) returning *",
+      [postid, authorid, text],
+    );
+    client.release();
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+}
