@@ -6,38 +6,24 @@ import { postComments } from "@/app/actions/db-actions";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function CommentTab({ comments, postid }) {
-  //   const [comments, setComments] = useState([
-  //     {
-  //       id: 1,
-  //       author: "Deven Mital",
-  //       date: "March 1, 2025",
-  //       text: "This is the first comment.",
-  //     },
-  //     {
-  //       id: 2,
-  //       author: "Deven Mital",
-  //       date: "March 1, 2025",
-  //       text: "Another comment here!",
-  //     },
-  //   ]);
   const [newComment, setNewComment] = useState("");
   const { user } = useUser();
 
   async function handleSubmit() {
     if (newComment.trim() === "") return;
 
-    const newEntry = {
-      id: Date.now(),
-      author: user.name, // Hardcoded for now
-      date: new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-      text: newComment.trim(),
-    };
+    // const newEntry = {
+    //   id: Date.now(),
+    //   author: user.name, // Hardcoded for now
+    //   date: new Date().toLocaleDateString("en-US", {
+    //     year: "numeric",
+    //     month: "long",
+    //     day: "numeric",
+    //   }),
+    //   text: newComment.trim(),
+    // };
 
-    const result = await postComments(postid, user.sub, newEntry.text);
+    const result = await postComments(postid, user.sub, newComment.trim());
     //setComments([...comments, newEntry]);
     setNewComment("");
   }
@@ -45,6 +31,8 @@ export default function CommentTab({ comments, postid }) {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSubmit();
   };
+
+  console.log("comments", comments);
 
   return (
     <div className={styles.commentTabContainer}>
@@ -54,8 +42,8 @@ export default function CommentTab({ comments, postid }) {
           {comments.map((comment) => (
             <div key={comment.id} className={styles.commentBox}>
               <div className={styles.commentTag}>
-                <h3>{comment.author}</h3>
-                <h4>{comment.date}</h4>
+                <h3>{comment.userName}</h3>
+                <h4>{comment.created_at.toDateString()}</h4>
               </div>
               <p>{comment.text}</p>
             </div>

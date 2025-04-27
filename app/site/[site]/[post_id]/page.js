@@ -11,6 +11,7 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import CommentTab from "@/app/components/CommentTab";
 import { getComments } from "@/app/actions/db-actions";
+import { getUserName, getUserRoles } from "@/app/actions/role-actions";
 
 export default async function PostPage({ params }) {
   const p = await params;
@@ -18,6 +19,13 @@ export default async function PostPage({ params }) {
   const post_id = p.post_id;
 
   const comments = await getComments(post_id);
+  const commentsWithName = await Promise.all(
+    comments.map(async (comment) => {
+      const userName = await getUserName(comment.author_id);
+      //const userRoles = await getUserRoles({ sub: post.author_id });
+      return { ...comment, userName };
+    }),
+  );
 
   return (
     <div>
@@ -78,7 +86,7 @@ export default async function PostPage({ params }) {
             <img src={"/placeholder.jpg"} width="50%" />
           </div>
 
-          <CommentTab comments={comments} postid={post_id} />
+          <CommentTab comments={commentsWithName} postid={post_id} />
         </div>
       </div>
     </div>
