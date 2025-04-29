@@ -17,15 +17,14 @@ export default function CommentTab({ comments, postid }) {
 
   async function handleSubmit() {
     if (newComment.trim() === "") return;
-
     const result = await postComments(postid, user.sub, newComment.trim());
-    //setComments([...comments, newEntry]);
     setNewComment("");
   }
 
   async function handleDelete(id) {
     const result = await deleteComments(id);
   }
+
   function handleEdit(comment) {
     setEditingCommentId(comment.id);
     setEditingText(comment.text);
@@ -33,10 +32,8 @@ export default function CommentTab({ comments, postid }) {
   async function handleSaveEdit() {
     if (editingText.trim() === "") return;
 
-    // Call your API to update
     const result = await editComments(editingCommentId, editingText.trim());
 
-    // After saving, clear edit state
     setEditingCommentId(null);
     setEditingText("");
   }
@@ -44,8 +41,6 @@ export default function CommentTab({ comments, postid }) {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSubmit();
   };
-
-  console.log("comments", comments);
 
   return (
     <div className={styles.commentTabContainer}>
@@ -55,7 +50,29 @@ export default function CommentTab({ comments, postid }) {
           {comments.map((comment) => (
             <div key={comment.id} className={styles.commentBox}>
               <div className={styles.commentTag}>
-                <h3>{comment.userName}</h3>
+                <div className={styles.nameID}>
+                  <div className={styles.username}>{comment.userName}</div>
+                  {(() => {
+                    let nonStandardRole = null;
+
+                    if (Array.isArray(comment.userRoles)) {
+                      nonStandardRole = comment.userRoles.find(
+                        (role) => role !== "Standard",
+                      );
+                    } else if (
+                      typeof comment.userRoles === "string" &&
+                      comment.userRoles !== "Standard"
+                    ) {
+                      nonStandardRole = comment.userRoles;
+                    }
+
+                    return nonStandardRole ? (
+                      <div className={styles.roleTags}>
+                        {nonStandardRole.toUpperCase()}
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
                 <h4>{comment.created_at.toDateString()}</h4>
                 <div className={styles.commentButtons}>
                   <button

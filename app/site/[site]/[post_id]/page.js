@@ -22,8 +22,8 @@ export default async function PostPage({ params }) {
   const commentsWithName = await Promise.all(
     comments.map(async (comment) => {
       const userName = await getUserName(comment.author_id);
-      //const userRoles = await getUserRoles({ sub: post.author_id });
-      return { ...comment, userName };
+      const userRoles = await getUserRoles({ sub: comment.author_id });
+      return { ...comment, userName, userRoles };
     }),
   );
 
