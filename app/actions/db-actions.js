@@ -49,12 +49,25 @@ export async function postComments(postid, authorid, text) {
     return [];
   }
 }
-export async function deleteComments(postid, authorid, text) {
+export async function deleteComments(id) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query("DELETE FROM comments WHERE id = $1", [
+      id,
+    ]);
+    client.release();
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+}
+export async function editComments(id, text) {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "INSERT INTO comments (post_id, author_id, text) values ($1, $2, $3) returning *",
-      [postid, authorid, text],
+      "update comments set text = $1 where id = $2 returning *",
+      [text, id],
     );
     client.release();
     return result.rows;

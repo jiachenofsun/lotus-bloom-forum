@@ -113,3 +113,21 @@
   font-family: inherit;
   box-sizing: border-box;
 }
+
+.deleteButton {
+  background-color: transparent;
+  font-size: 0.8rem;
+  border: none;
+  align-self: flex-start;
+  scale: 50%;
+  /* transition: background-color 0.2s ease; */
+}
+
+.deleteButton:hover {
+  background-color: rgb(103, 0, 0);
+}
+
+.commentButtons {
+  display: flex;
+  flex-direction: horizontal;
+}
