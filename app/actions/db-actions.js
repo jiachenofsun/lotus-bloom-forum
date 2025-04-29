@@ -25,7 +25,7 @@ export async function getComments(postid) {
   try {
     const client = await pool.connect();
     const result = await client.query(
-      "SELECT * FROM comments WHERE post_id = $1",
+      "SELECT * FROM comments WHERE post_id = $1 ORDER BY created_at",
       [postid],
     );
     client.release();

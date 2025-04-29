@@ -121,7 +121,6 @@
   border: none;
   align-self: flex-start;
   scale: 50%;
-  /* transition: background-color 0.2s ease; */
 }
 
 .deleteButton:hover {
