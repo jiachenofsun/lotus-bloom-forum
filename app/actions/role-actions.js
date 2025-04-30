@@ -303,7 +303,7 @@ export async function getUserName(userId) {
     });
 
     const user = await auth0.users.get({ id: userId });
-    console.log("getusername", userId, user);
+    // console.log("getusername", userId, user);
     return user.data?.name || "Unknown User";
   } catch (error) {
     console.error("Error getting user name:", error);

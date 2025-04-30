@@ -1,4 +1,5 @@
 import styles from "./DiscussionBoardPost.module.css";
+import { handleDeletePost } from "@/app/site/[site]/page.js";
 
 export default async function DiscussionBoardPost({
   site,
@@ -21,6 +22,9 @@ export default async function DiscussionBoardPost({
           )}
         </div>
         <div className={styles.postTitle}>{title}</div>
+        {/* <button onClick={handleDeletePost} className={styles.deleteButton}>
+          Delete
+        </button> */}
       </button>
     </form>
   );

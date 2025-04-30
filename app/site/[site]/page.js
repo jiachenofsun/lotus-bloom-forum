@@ -1,11 +1,3 @@
-/*
- * TODO:
- * 1a. Add a list of posts for the site
- * 1b. display some error message if the site doesn't exist/is invalid
- * 2. Add a way to create a new post
- *  - this can maybe be through a separate page (eg. /:site/new)
- */
-
 import DiscussionBoardPost from "@/app/components/DiscussionBoardPost";
 import NewPostButton from "@/app/components/new-post-button";
 import styles from "./page.module.css";
@@ -65,3 +57,11 @@ export async function generateMetadata({ params }) {
     title: `Site: ${p.site}`,
   };
 }
+
+// async function handleDeletePost(postId) {
+//   "use server";
+
+//   await deletePost(postId);
+
+//   redirect(`/site/${site}`);
+// }
