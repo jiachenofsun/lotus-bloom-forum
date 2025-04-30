@@ -40,8 +40,9 @@
 
 .commentTag {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .commentTag h3 {
@@ -112,4 +113,79 @@
   padding: 5px;
   font-family: inherit;
   box-sizing: border-box;
+}
+
+.deleteButton {
+  background-color: transparent;
+  font-size: 0.8rem;
+  border: none;
+  align-self: flex-start;
+  scale: 50%;
+}
+
+.deleteButton:hover {
+  background-color: rgb(103, 0, 0);
+}
+
+.commentButtons {
+  display: flex;
+  flex-direction: row;
+}
+.nameID {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.username {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.roleTags {
+  background-color: #e09a3b;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.commentTag {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.commentMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.commentTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.commentButtons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.commentTag h4 {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #7f7a94;
 }
