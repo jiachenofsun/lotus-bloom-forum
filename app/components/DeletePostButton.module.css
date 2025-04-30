@@ -1,0 +1,26 @@
+.imageButton {
+  background-color: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.imageButton img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.imageButton:hover img {
+  transform: scale(1.1);
+  filter: grayscale(0%);
+  opacity: 1;
+}

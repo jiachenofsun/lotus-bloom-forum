@@ -43,6 +43,7 @@ export default async function SitePage({ params }) {
               name={post.userName}
               title={post.title}
               roles={post.userRoles}
+              post_id={post.id}
             />
           ))}
         </div>
