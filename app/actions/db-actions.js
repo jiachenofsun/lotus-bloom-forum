@@ -42,15 +42,31 @@ export async function editPost(post_id, title, body) {
     const client = await pool.connect();
 
     const result = await client.query(
-      "UPDATE posts SET title = $1, body = $2, updated_at = NOW() WHERE id = $3 RETURNING *",
+      "UPDATE posts SET title = $1, body = $2 WHERE id = $3 RETURNING *",
       [title, body, post_id],
     );
 
     client.release();
+
+    console.log("Update result:", result.rows);
     return result.rows;
   } catch (error) {
     console.error("Error editing post:", error);
     return [];
+  }
+}
+
+export async function getPostById(post_id) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query("SELECT * FROM posts WHERE id = $1", [
+      post_id,
+    ]);
+    client.release();
+    return result.rows[0]; // return the first (and only) post
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return null;
   }
 }
 

@@ -12,8 +12,8 @@
 }
 
 .imageButton img {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   filter: grayscale(100%);
   opacity: 0.6;

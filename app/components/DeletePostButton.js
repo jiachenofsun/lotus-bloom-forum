@@ -8,13 +8,12 @@ export default function DeletePostButton({ post_id }) {
     <button
       onClick={(e) => {
         e.preventDefault();
-        console.log(post_id);
         deletePost(post_id);
       }}
       className={styles.imageButton}
     >
       {" "}
-      <img src="/bin.png" alt="Delete" />
+      <img src="/trash.png" alt="Delete" />
     </button>
   );
 }
