@@ -20,12 +20,16 @@ export default async function NewPostPage({ params }) {
     const id = user.sub;
     const title = formData.get("title");
     const text = formData.get("text");
-    const imageFiles = formData.getAll("images");
-    const validImages = imageFiles.filter((file) => file.size > 0);
+    const imageUrls = formData.getAll("imageUrls");
+    const imageSizes = formData.getAll("imageSizes");
+    const blobs = imageUrls.map((url, i) => ({
+      url,
+      fileSize: imageSizes[i],
+    }));
     try {
       postId = await addPost(id, site, title, text);
-      if (validImages.length > 0) {
-        await addPostImages(postId, validImages);
+      if (blobs.length > 0) {
+        await addPostImages(postId, blobs);
       }
     } catch (error) {
       console.log("Error in handleSubmit:", error);

@@ -58,94 +58,35 @@ export async function addPost(author_id, site, title, body) {
 
 /* Adds all post images to Vercel Blob and then adds them to the database. 
   If anything fails, it will rollback the transaction, 
-  so no images will be added to Vercel Blob nor the database. */
-export async function addPostImages(postId, images) {
-  console.log("Adding post images to Vercel Blob", images);
-  if (!images || images.length === 0) {
+  so no entries will be added to the database. */
+export async function addPostImages(postId, blobs) {
+  if (!blobs || blobs.length === 0) {
     return [];
   }
 
-  const uploadedBlobs = [];
+  console.log("-----blobs-----", blobs);
 
   try {
-    // Upload all images to Vercel Blob in parallel
-    const uploadPromises = images.map(async (image, index) => {
-      const timestamp = Date.now();
-      const fileExtension = image.name.split(".").pop();
-      const filename = `post-${postId}-${timestamp}-${index}.${fileExtension}`;
-
-      const blob = await put(filename, image, {
-        access: "public",
-        addRandomSuffix: false,
-        contentType: image.type,
-      });
-
-      return {
-        blob,
-        fileSize: image.size,
-        originalIndex: index,
-      };
-    });
-
-    const uploadResults = await Promise.all(uploadPromises);
-    uploadedBlobs.push(...uploadResults);
-
     const client = await pool.connect();
     // Begin database transaction
-    await client.query("BEGIN");
+    const insertPromises = blobs.map(async (blob) => {
+      const { url, fileSize } = blob;
 
-    try {
-      // Insert all records into post_images table
-      const insertPromises = uploadResults.map(async (result) => {
-        const { blob, fileSize } = result;
-
-        const insertResult = await client.query(
-          `
+      const insertResult = await client.query(
+        `
           INSERT INTO post_images (post_id, file_size_bytes, blob_url)
           VALUES ($1, $2, $3)
           RETURNING *
         `,
-          [postId, fileSize, blob.url],
-        );
+        [postId, fileSize, url],
+      );
 
-        return insertResult.rows[0];
-      });
-
-      await Promise.all(insertPromises);
-      await client.query("COMMIT");
-      client.release();
-    } catch (dbError) {
-      await client.query("ROLLBACK");
-      client.release();
-      throw dbError;
-    }
-  } catch (error) {
-    console.log("Error in addPostImages:", error);
-    // Clean up: Delete any successfully uploaded blobs
-    if (uploadedBlobs.length > 0) {
-      const cleanupPromises = uploadedBlobs.map(async (result) => {
-        try {
-          await del(result.blob.url);
-        } catch (cleanupError) {
-          console.error(
-            "Error cleaning up blob:",
-            result.blob.url,
-            cleanupError,
-          );
-          // Log but don't throw - we don't want cleanup errors to mask the original error
-        }
-      });
-
-      // Wait for cleanup to complete (with timeout)
-      try {
-        await Promise.allSettled(cleanupPromises);
-      } catch (cleanupError) {
-        console.error("Error during blob cleanup:", cleanupError);
-      }
-    }
-
-    // Re-throw the original error
-    throw new Error(`Failed to add post images: ${error.message}`);
+      return insertResult.rows[0];
+    });
+    await Promise.all(insertPromises);
+    client.release();
+  } catch (dbError) {
+    throw dbError;
   }
 }
 
@@ -174,8 +115,16 @@ export async function getPostById(post_id) {
     const result = await client.query("SELECT * FROM posts WHERE id = $1", [
       post_id,
     ]);
+    // Get all images for this post
+    const imagesResult = await client.query(
+      "SELECT blob_url FROM post_images WHERE post_id = $1",
+      [post_id],
+    );
     client.release();
-    return result.rows[0]; // return the first (and only) post
+    const post = result.rows[0];
+    if (!post) return null;
+    post.blob_urls = imagesResult.rows.map((row) => row.blob_url);
+    return post;
   } catch (error) {
     console.error("Error fetching post:", error);
     return null;

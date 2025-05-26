@@ -75,6 +75,23 @@ export default async function PostPage({ params, searchParams }) {
               </div>
             </div>
             <p>{post.body}</p>
+            {post.blob_urls.map((url, index) => (
+              <a
+                href={url}
+                key={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.imageLink}
+              >
+                <Image
+                  src={url}
+                  alt={`Post Image ${index + 1}`}
+                  width={400}
+                  height={400}
+                  className={styles.postImage}
+                />
+              </a>
+            ))}
           </div>
 
           <div className={styles.commentsSection}>
