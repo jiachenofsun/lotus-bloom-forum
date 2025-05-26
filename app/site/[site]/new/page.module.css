@@ -1,10 +1,11 @@
 .container {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   background: linear-gradient(to bottom, #ffffff, #36b0c8);
   padding: 3rem 1rem;
-  height: 100vh;
-  margin-top: 74px;
+  min-height: 95vh;
+  margin-top: 5vh;
 }
 
 .formBox {
@@ -14,7 +15,6 @@
   max-width: 600px;
   width: 100%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: 70%;
 }
 
 .posterName {
@@ -51,4 +51,19 @@
 
 .submitButton:hover {
   background-color: #a05bb3;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorDiv {
+  color: #b00020;
+  background: #ffeaea;
+  border: 1px solid #ffb3b3;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { Pool } from "pg";
+import { put, del } from "@vercel/blob";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -43,16 +44,108 @@ export async function getPosts(site, page = 1, pageSize = 10) {
 export async function addPost(author_id, site, title, body) {
   try {
     const client = await pool.connect();
-
     const result = await client.query(
-      "INSERT INTO posts (author_id, site, title, body) values ($1, $2, $3, $4)",
+      "INSERT INTO posts (author_id, site, title, body) VALUES ($1, $2, $3, $4) RETURNING id",
       [author_id, site, title, body],
     );
     client.release();
-    return result.rows;
+    return result.rows[0].id;
   } catch (error) {
     console.error("Error adding post:", error);
+    throw error;
+  }
+}
+
+/* Adds all post images to Vercel Blob and then adds them to the database. 
+  If anything fails, it will rollback the transaction, 
+  so no images will be added to Vercel Blob nor the database. */
+export async function addPostImages(postId, images) {
+  console.log("Adding post images to Vercel Blob", images);
+  if (!images || images.length === 0) {
     return [];
+  }
+
+  const uploadedBlobs = [];
+
+  try {
+    // Upload all images to Vercel Blob in parallel
+    const uploadPromises = images.map(async (image, index) => {
+      const timestamp = Date.now();
+      const fileExtension = image.name.split(".").pop();
+      const filename = `post-${postId}-${timestamp}-${index}.${fileExtension}`;
+
+      const blob = await put(filename, image, {
+        access: "public",
+        addRandomSuffix: false,
+        contentType: image.type,
+      });
+
+      return {
+        blob,
+        fileSize: image.size,
+        originalIndex: index,
+      };
+    });
+
+    const uploadResults = await Promise.all(uploadPromises);
+    uploadedBlobs.push(...uploadResults);
+
+    const client = await pool.connect();
+    // Begin database transaction
+    await client.query("BEGIN");
+
+    try {
+      // Insert all records into post_images table
+      const insertPromises = uploadResults.map(async (result) => {
+        const { blob, fileSize } = result;
+
+        const insertResult = await client.query(
+          `
+          INSERT INTO post_images (post_id, file_size_bytes, blob_url)
+          VALUES ($1, $2, $3)
+          RETURNING *
+        `,
+          [postId, fileSize, blob.url],
+        );
+
+        return insertResult.rows[0];
+      });
+
+      await Promise.all(insertPromises);
+      await client.query("COMMIT");
+      client.release();
+    } catch (dbError) {
+      await client.query("ROLLBACK");
+      client.release();
+      throw dbError;
+    }
+  } catch (error) {
+    console.log("Error in addPostImages:", error);
+    // Clean up: Delete any successfully uploaded blobs
+    if (uploadedBlobs.length > 0) {
+      const cleanupPromises = uploadedBlobs.map(async (result) => {
+        try {
+          await del(result.blob.url);
+        } catch (cleanupError) {
+          console.error(
+            "Error cleaning up blob:",
+            result.blob.url,
+            cleanupError,
+          );
+          // Log but don't throw - we don't want cleanup errors to mask the original error
+        }
+      });
+
+      // Wait for cleanup to complete (with timeout)
+      try {
+        await Promise.allSettled(cleanupPromises);
+      } catch (cleanupError) {
+        console.error("Error during blob cleanup:", cleanupError);
+      }
+    }
+
+    // Re-throw the original error
+    throw new Error(`Failed to add post images: ${error.message}`);
   }
 }
 
