@@ -16,7 +16,7 @@ export async function uploadImage(image) {
       contentType: image.type,
     });
 
-    return { url: blob.url, fileSize: image.size, error: null };
+    return { url: blob.url, size: image.size, error: null };
   } catch (error) {
     console.error("Upload error:", error);
     return { error: "Upload failed" };

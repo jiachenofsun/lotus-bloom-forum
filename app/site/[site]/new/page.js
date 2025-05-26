@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import styles from "./page.module.css";
 import { getSession } from "@auth0/nextjs-auth0";
 import { addPost, addPostImages, deletePost } from "@/app/actions/db-actions";
-import NewPostForm from "./NewPostForm";
+import PostForm from "@/app/components/PostForm";
 
 export default async function NewPostPage({ params }) {
   const p = await params;
@@ -24,7 +24,7 @@ export default async function NewPostPage({ params }) {
     const imageSizes = formData.getAll("imageSizes");
     const blobs = imageUrls.map((url, i) => ({
       url,
-      fileSize: imageSizes[i],
+      size: imageSizes[i],
     }));
     try {
       postId = await addPost(id, site, title, text);
@@ -32,7 +32,6 @@ export default async function NewPostPage({ params }) {
         await addPostImages(postId, blobs);
       }
     } catch (error) {
-      console.log("Error in handleSubmit:", error);
       if (postId) {
         await deletePost(postId);
       }
@@ -47,7 +46,7 @@ export default async function NewPostPage({ params }) {
   return (
     <div>
       <div className={styles.container}>
-        <NewPostForm user={user} site={site} handleSubmit={handleSubmit} />
+        <PostForm user={user} site={site} handleSubmit={handleSubmit} />
       </div>
     </div>
   );

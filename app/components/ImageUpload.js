@@ -9,18 +9,32 @@ const MAX_FILES = 3;
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
-export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
-  const [images, setImages] = useState([]);
+export default function ImageUpload({
+  isPending,
+  onMarkAsUsedReady,
+  initialImages = [],
+}) {
+  const [images, setImages] = useState(initialImages);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
-  const uploadedUrlsRef = useRef(new Set());
-  const shouldCleanupRef = useRef(true);
 
-  // Track uploaded URLs for cleanup
+  const newlyUploadedUrlsRef = useRef(new Set());
+  const shouldCleanupRef = useRef(true);
+  const initialImageUrlsRef = useRef(new Set());
+
+  useEffect(() => {
+    initialImages.forEach((img) => {
+      if (img.url) {
+        initialImageUrlsRef.current.add(img.url);
+      }
+    });
+  }, [initialImages]);
+
+  // Track ONLY newly uploaded URLs for cleanup (i.e. exclude initial images)
   useEffect(() => {
     images.forEach((img) => {
-      if (img.url && !img.url.startsWith("blob:")) {
-        uploadedUrlsRef.current.add(img.url);
+      if (img.url && !initialImageUrlsRef.current.has(img.url)) {
+        newlyUploadedUrlsRef.current.add(img.url);
       }
     });
   }, [images]);
@@ -28,7 +42,7 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
   // Method to mark images as "used" - prevents cleanup
   const markImagesAsUsed = () => {
     shouldCleanupRef.current = false;
-    uploadedUrlsRef.current.clear();
+    newlyUploadedUrlsRef.current.clear();
   };
 
   // Pass the markImagesAsUsed function to parent
@@ -38,7 +52,7 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
     }
   }, [onMarkAsUsedReady]);
 
-  // Cleanup on unmount or page leave
+  // Cleanup on unmount or page leave - ONLY newly uploaded images
   useEffect(() => {
     const cleanup = async () => {
       if (!shouldCleanupRef.current) {
@@ -46,9 +60,9 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
         return;
       }
 
-      const urlsToDelete = Array.from(uploadedUrlsRef.current);
+      const urlsToDelete = Array.from(newlyUploadedUrlsRef.current);
       if (urlsToDelete.length > 0) {
-        console.log("Cleaning up unused images:", urlsToDelete);
+        console.log("Cleaning up unused newly uploaded images:", urlsToDelete);
         try {
           await Promise.all(urlsToDelete.map((url) => deleteImage(url)));
         } catch (err) {
@@ -68,7 +82,6 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      // Cleanup when component unmounts
       cleanup();
     };
   }, []);
@@ -117,6 +130,7 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
           url: result.url,
           fileName: file.name,
           size: file.size,
+          isNew: true, // DEBUGGING ONLY FLAG to identify newly uploaded images
         };
       });
 
@@ -139,11 +153,16 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
 
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
 
-    // Clean up the blob storage
-    if (imageToRemove.url && !imageToRemove.url.startsWith("blob:")) {
+    // Only clean up from blob storage if it's a newly uploaded image
+    // Do not delete initial images from storage
+    if (
+      imageToRemove.url &&
+      !imageToRemove.url.startsWith("blob:") &&
+      !initialImageUrlsRef.current.has(imageToRemove.url)
+    ) {
       try {
         await deleteImage(imageToRemove.url);
-        uploadedUrlsRef.current.delete(imageToRemove.url);
+        newlyUploadedUrlsRef.current.delete(imageToRemove.url);
       } catch (err) {
         console.error("Failed to delete image from blob storage:", err);
       }
@@ -187,7 +206,7 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
 
           <div className={styles.previewGrid}>
             {images.map((image, index) => (
-              <div key={image.id} className={styles.previewItem}>
+              <div key={index} className={styles.previewItem}>
                 <div className={styles.imageWrapper}>
                   <Image
                     src={image.url}
@@ -221,8 +240,8 @@ export default function ImageUpload({ isPending, onMarkAsUsedReady }) {
       )}
 
       {/* Hidden inputs for form submission */}
-      {images.map((image) => (
-        <div key={image.id}>
+      {images.map((image, index) => (
+        <div key={index}>
           <input type="hidden" name="imageUrls" value={image.url} />
           <input type="hidden" name="imageSizes" value={image.size} />
         </div>

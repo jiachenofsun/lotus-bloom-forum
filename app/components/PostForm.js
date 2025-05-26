@@ -1,11 +1,19 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import ImageUpload from "@/app/components/ImageUpload";
 import Spinner from "@/app/components/Spinner";
-import styles from "./page.module.css";
+import styles from "./PostForm.module.css";
 import { useActionState } from "react";
 
-export default function NewPostForm({ user, handleSubmit }) {
+export default function PostForm({
+  user,
+  handleSubmit,
+  initialTitle = "",
+  initialText = "",
+  initialImages = [],
+  submitButtonText = "Submit Post",
+  successMessage = "Post created successfully",
+}) {
   const [state, formAction, isPending] = useActionState(handleSubmit, {
     error: null,
   });
@@ -24,7 +32,7 @@ export default function NewPostForm({ user, handleSubmit }) {
 
       // If submission was successful (no error), mark images as used
       if (!result?.error && markImagesAsUsedRef.current) {
-        console.log("Post created successfully, marking images as used");
+        console.log(successMessage + ", marking images as used");
         markImagesAsUsedRef.current();
       }
 
@@ -45,6 +53,7 @@ export default function NewPostForm({ user, handleSubmit }) {
         type="text"
         placeholder="Post Title"
         name="title"
+        defaultValue={initialTitle}
         required
         disabled={isPending}
       />
@@ -52,19 +61,21 @@ export default function NewPostForm({ user, handleSubmit }) {
         className={styles.contentInput}
         placeholder="Write your post here..."
         name="text"
+        defaultValue={initialText}
         required
         disabled={isPending}
       />
       <ImageUpload
         isPending={isPending}
         onMarkAsUsedReady={handleMarkAsUsedReady}
+        initialImages={initialImages}
       />
       <button
         type="submit"
         className={styles.submitButton}
         disabled={isPending}
       >
-        {isPending ? <Spinner /> : "Submit Post"}
+        {isPending ? <Spinner /> : submitButtonText}
       </button>
     </form>
   );
