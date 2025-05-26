@@ -5,7 +5,9 @@ import { editPost, getPostById } from "@/app/actions/db-actions";
 import PostForm from "@/app/components/PostForm";
 
 export default async function EditPage({ params }) {
-  const { site, post_id } = params;
+  const p = await params;
+  const site = p.site;
+  const post_id = p.post_id;
 
   const session = await getSession();
   const { user } = session;
