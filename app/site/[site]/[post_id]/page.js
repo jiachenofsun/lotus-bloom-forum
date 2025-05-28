@@ -53,27 +53,39 @@ export default async function PostPage({ params, searchParams }) {
 
         <div className={styles.flexContainer}>
           <div className={styles.textbox}>
-            <div className={styles.userTag}>
-              <h1>{post.title}</h1>
+            <div className={styles.postheader}>
+              <div className={styles.userTag}>
+                <div className={styles.userProfile}>
+                  <Image
+                    src={"/default_profile.svg"}
+                    alt="Back"
+                    width={40}
+                    height={40}
+                  />
+                  <div className={styles.userBox}>
+                    <h2>{authorName} </h2>
+                    {nonStandardRole && (
+                      <div className={styles.roleTags}>
+                        {nonStandardRole.toUpperCase()}
+                      </div>
+                    )}
+                    <h3>{createdAt} </h3>
+                  </div>
+                </div>
 
-              <div className={styles.userProfile}>
-                <Image
-                  src={"/default_profile.svg"}
-                  alt="Back"
-                  width={40}
-                  height={40}
-                />
-                <div className={styles.userBox}>
-                  <h1>{authorName} </h1>
-                  {nonStandardRole && (
-                    <div className={styles.roleTags}>
-                      {nonStandardRole.toUpperCase()}
-                    </div>
-                  )}
-                  <h2>{createdAt} </h2>
+                <div className={styles.likedisplay}>
+                  <Image
+                    src={"/heart.png"}
+                    alt="black heart"
+                    width={25}
+                    height={25}
+                  />
+                  <p>100</p>
                 </div>
               </div>
+              <h1>{post.title}</h1>
             </div>
+
             <p>{post.body}</p>
           </div>
 
