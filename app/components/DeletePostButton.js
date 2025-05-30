@@ -3,7 +3,19 @@
 import styles from "./DeletePostButton.module.css";
 import { deletePost } from "../actions/db-actions";
 
-export default function DeletePostButton({ post_id }) {
+export default function DeletePostButton({
+  post_id,
+  author_id,
+  currentUserId,
+  userRoles = [],
+}) {
+  const isAdmin = userRoles.includes("Lotus Bloom Admin");
+  const isOwner = author_id === currentUserId;
+
+  const canDelete = isAdmin || isOwner;
+
+  if (!canDelete) return null;
+
   return (
     <button
       onClick={(e) => {

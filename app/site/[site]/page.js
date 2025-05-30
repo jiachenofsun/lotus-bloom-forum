@@ -5,6 +5,8 @@ import styles from "./page.module.css";
 import { getPosts } from "@/app/actions/db-actions";
 import { getUserDetails } from "@/app/actions/role-actions";
 import { sites } from "@/app/constants";
+import { getSession } from "@auth0/nextjs-auth0";
+import { getUserRoles } from "@/app/actions/role-actions";
 
 export default async function SitePage({ params, searchParams }) {
   const p = await params;
@@ -12,6 +14,8 @@ export default async function SitePage({ params, searchParams }) {
   const site = p.site;
   const currentPage = Number(sp?.page) || 1;
   const pageSize = 10;
+  const session = await getSession();
+  const userRoles = session?.user ? await getUserRoles(session.user) : [];
 
   const {
     posts,
@@ -33,7 +37,7 @@ export default async function SitePage({ params, searchParams }) {
       <div className={styles.wholePage}>
         <div className={styles.sidebar}>
           <h1 className={styles.h1}>General</h1>
-          <NewPostButton site={site} />
+          <NewPostButton site={site} userRoles={userRoles} />
           <div className={styles.navButtons}>
             {sites.map((site) => (
               <Link

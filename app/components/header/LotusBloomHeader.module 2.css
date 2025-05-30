@@ -1,0 +1,82 @@
+.container {
+  position: relative;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.5rem;
+  width: 100%;
+  position: fixed;
+  z-index: 1000;
+  background-color: #f2f9fa;
+  border-bottom: 1px solid black;
+}
+
+.separator {
+  height: 1px;
+  background-color: #ffffff;
+  width: 100%;
+  position: relative;
+  z-index: 1001;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #000000;
+  letter-spacing: 0.15em;
+}
+
+.menuIconContainer {
+  cursor: pointer;
+}
+
+.tocOverlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 999;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.toc {
+  background-color: #784692;
+
+  width: 320px;
+  padding: 2rem;
+  padding-top: 5rem;
+  height: 100%;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  overflow-y: auto;
+  transform: translateX(100%);
+  color: #000000;
+  transition: transform 0.3s ease-in-out;
+}
+
+.tocTitle {
+  margin-top: 0;
+}
+
+.tocList {
+  list-style: none;
+  padding: 0;
+}
+
+.tocLink {
+  text-decoration: none;
+  color: #000000;
+  font-size: 1.2rem;
+}
