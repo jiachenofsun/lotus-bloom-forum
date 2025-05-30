@@ -9,7 +9,7 @@ export default function DeletePostButton({
   currentUserId,
   userRoles = [],
 }) {
-  const isAdmin = userRoles.includes("Lotus Bloom Admin");
+  const isAdmin = userRoles.includes("Admin");
   const isOwner = author_id === currentUserId;
 
   const canDelete = isAdmin || isOwner;
