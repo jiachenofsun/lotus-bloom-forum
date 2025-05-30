@@ -3,6 +3,57 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { ManagementClient } from "auth0";
 import { cache } from "react";
+import axios from "axios";
+
+export async function setUserRole(userId, roleType) {
+  try {
+    const auth0 = new ManagementClient({
+      domain: process.env.AUTH0_DOMAIN,
+      clientId: process.env.AUTH0_MANAGEMENT_CLIENT_ID,
+      clientSecret: process.env.AUTH0_MANAGEMENT_CLIENT_SECRET,
+      scope: "read:users update:users delete:roles",
+    });
+
+    const currentRoles = await auth0.users.getRoles({ id: userId });
+    const roleIds = currentRoles.data.map((role) => role.id);
+
+    if (roleIds.length > 0) {
+      await axios.delete(
+        `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}/roles`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.AUTH0_DELETE_ROLES_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          data: {
+            roles: roleIds,
+          },
+        },
+      );
+    }
+
+    if (roleType !== "None") {
+      let roleId;
+      if (roleType === "Family Navigator") {
+        roleId = process.env.AUTH0_FAMILY_NAVIGATOR_ROLE_ID;
+      } else if (roleType === "Admin") {
+        roleId = process.env.AUTH0_ADMIN_ROLE_ID;
+      }
+      await auth0.users.assignRoles({ id: userId }, { roles: [roleId] });
+    }
+
+    return {
+      success: true,
+      message: `Successfully assigned ${roleType} role`,
+    };
+  } catch (error) {
+    console.error("Error assigning role:", error);
+    return {
+      success: false,
+      error: "Failed to assign role. Please try again later.",
+    };
+  }
+}
 
 export async function assignRole(user, roleType) {
   // Validate the role type

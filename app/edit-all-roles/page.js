@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { listUsers } from "../actions/role-actions";
+import { listUsers, setUserRole } from "../actions/role-actions";
 import styles from "./EditAllRoles.module.css";
 
 export default function EditAllRoles() {
@@ -10,6 +10,7 @@ export default function EditAllRoles() {
   const [status, setStatus] = useState("");
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [updatingUsers, setUpdatingUsers] = useState(new Set());
 
   useEffect(() => {
     async function fetchUsers() {
@@ -32,6 +33,56 @@ export default function EditAllRoles() {
 
     fetchUsers();
   }, [user]);
+
+  // Helper function to determine current role selection
+  const getCurrentRoleSelection = (userRoles) => {
+    if (!userRoles || userRoles.length === 0) return "None";
+
+    // Check if user has Admin role
+    if (userRoles.some((role) => role.includes("Admin"))) {
+      return "Admin";
+    }
+
+    // Check if user has Family Navigator role
+    if (userRoles.some((role) => role.includes("Family Navigator"))) {
+      return "Family Navigator";
+    }
+
+    return "None";
+  };
+
+  // Handle role change
+  const handleRoleChange = async (userId, newRole) => {
+    setUpdatingUsers((prev) => new Set([...prev, userId]));
+    setStatus("");
+
+    try {
+      const result = await setUserRole(userId, newRole);
+
+      if (result.success) {
+        setStatus(
+          "Success: User roles updated successfully. Refreshing all roles...",
+        );
+
+        // Refresh the users list to show updated roles
+        const refreshResult = await listUsers();
+        if (refreshResult.success) {
+          setUsers(refreshResult.users);
+        }
+      } else {
+        setStatus(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setUpdatingUsers((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
+      setStatus("");
+    }
+  };
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -69,31 +120,41 @@ export default function EditAllRoles() {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Roles</th>
-                  <th>Actions</th>
+                  <th>Current Roles</th>
+                  <th>Assign Role</th>
                 </tr>
               </thead>
               <tbody>
                 {users.length > 0 ? (
-                  users.map((user) => (
-                    <tr key={user.user_id}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
+                  users.map((userItem) => (
+                    <tr key={userItem.user_id}>
+                      <td>{userItem.name}</td>
+                      <td>{userItem.email}</td>
                       <td>
-                        {user.roles && user.roles.length > 0
-                          ? user.roles.join(", ")
+                        {userItem.roles && userItem.roles.length > 0
+                          ? userItem.roles.join(", ")
                           : "No roles"}
                       </td>
                       <td>
-                        <button
-                          className={styles.editButton}
-                          onClick={() => {
-                            // We'll implement this later
-                            console.log("Edit user:", user.user_id);
-                          }}
-                        >
-                          Edit Roles
-                        </button>
+                        <div className={styles.roleSelectContainer}>
+                          <select
+                            className={styles.roleSelect}
+                            value={getCurrentRoleSelection(userItem.roles)}
+                            onChange={(e) =>
+                              handleRoleChange(userItem.user_id, e.target.value)
+                            }
+                            disabled={updatingUsers.has(userItem.user_id)}
+                          >
+                            <option value="None">None</option>
+                            <option value="Family Navigator">
+                              Family Navigator
+                            </option>
+                            <option value="Admin">Admin</option>
+                          </select>
+                          {updatingUsers.has(userItem.user_id) && (
+                            <span className={styles.updating}>Updating...</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))
