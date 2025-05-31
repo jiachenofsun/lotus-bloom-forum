@@ -1,15 +1,26 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import CommentTab from "@/app/components/CommentTab";
-import { getPostById, getComments } from "@/app/actions/db-actions";
+import {
+  getPostById,
+  getComments,
+  getIfUserLikedPost,
+  getNumLikes,
+} from "@/app/actions/db-actions";
 import { getUserDetails } from "@/app/actions/role-actions";
 import Link from "next/link";
+import LikeButton from "@/app/components/LikeButton";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function PostPage({ params, searchParams }) {
   const p = await params;
   const sp = await searchParams;
   const site = p.site;
   const post_id = p.post_id;
+  const num_likes = await getNumLikes(post_id);
+  const session = await getSession(); // server-side auth
+  const userId = session?.user?.sub;
+  const isLiked = userId ? await getIfUserLikedPost(post_id, userId) : false;
   const currentPage = Number(sp?.page) || 1;
   const pageSize = 10;
 
@@ -74,13 +85,11 @@ export default async function PostPage({ params, searchParams }) {
                 </div>
 
                 <div className={styles.likedisplay}>
-                  <Image
-                    src={"/heart.png"}
-                    alt="black heart"
-                    width={25}
-                    height={25}
+                  <LikeButton
+                    postId={post_id}
+                    isInitiallyLiked={isLiked}
+                    initialLikeCount={num_likes}
                   />
-                  <p>100</p>
                 </div>
               </div>
               <h1>{post.title}</h1>
