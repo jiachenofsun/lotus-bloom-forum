@@ -1,15 +1,26 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import CommentTab from "@/app/components/CommentTab";
-import { getPostById, getComments } from "@/app/actions/db-actions";
+import {
+  getPostById,
+  getComments,
+  getIfUserLikedPost,
+  getNumLikes,
+} from "@/app/actions/db-actions";
 import { getUserDetails } from "@/app/actions/role-actions";
 import Link from "next/link";
+import LikeButton from "@/app/components/LikeButton";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function PostPage({ params, searchParams }) {
   const p = await params;
   const sp = await searchParams;
   const site = p.site;
   const post_id = p.post_id;
+  const num_likes = await getNumLikes(post_id);
+  const session = await getSession(); // server-side auth
+  const userId = session?.user?.sub;
+  const isLiked = userId ? await getIfUserLikedPost(post_id, userId) : false;
   const currentPage = Number(sp?.page) || 1;
   const pageSize = 10;
 
@@ -53,27 +64,37 @@ export default async function PostPage({ params, searchParams }) {
 
         <div className={styles.flexContainer}>
           <div className={styles.textbox}>
-            <div className={styles.userTag}>
-              <h1>{post.title}</h1>
+            <div className={styles.postheader}>
+              <div className={styles.userTag}>
+                <div className={styles.userProfile}>
+                  <Image
+                    src={"/default_profile.svg"}
+                    alt="Back"
+                    width={40}
+                    height={40}
+                  />
+                  <div className={styles.userBox}>
+                    <h2>{authorName} </h2>
+                    {nonStandardRole && (
+                      <div className={styles.roleTags}>
+                        {nonStandardRole.toUpperCase()}
+                      </div>
+                    )}
+                    <h3>{createdAt} </h3>
+                  </div>
+                </div>
 
-              <div className={styles.userProfile}>
-                <Image
-                  src={"/default_profile.svg"}
-                  alt="Back"
-                  width={40}
-                  height={40}
-                />
-                <div className={styles.userBox}>
-                  <h1>{authorName} </h1>
-                  {nonStandardRole && (
-                    <div className={styles.roleTags}>
-                      {nonStandardRole.toUpperCase()}
-                    </div>
-                  )}
-                  <h2>{createdAt} </h2>
+                <div className={styles.likedisplay}>
+                  <LikeButton
+                    postId={post_id}
+                    isInitiallyLiked={isLiked}
+                    initialLikeCount={num_likes}
+                  />
                 </div>
               </div>
+              <h1>{post.title}</h1>
             </div>
+
             <p>{post.body}</p>
           </div>
 
