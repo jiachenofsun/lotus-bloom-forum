@@ -89,17 +89,54 @@ export async function getPostById(post_id) {
   }
 }
 
-export async function deletePost(post_id) {
+// export async function deletePost(post_id) {
+//   try {
+//     const client = await pool.connect();
+
+//     const result = await client.query("DELETE FROM posts WHERE id = $1", [
+//       post_id,
+//     ]);
+//     client.release();
+//     return result.rows;
+//   } catch (error) {
+//     console.error("Error deleting post:", error);
+//     return 0;
+//   }
+// }
+
+export async function deletePost(post_id, currentUserId, userRoles = []) {
   try {
     const client = await pool.connect();
-    const result = await client.query("DELETE FROM posts WHERE id = $1", [
-      post_id,
-    ]);
+
+    // First, check who authored this post
+    const postResult = await client.query(
+      "SELECT author_id FROM posts WHERE id = $1",
+      [post_id],
+    );
+
+    if (postResult.rows.length === 0) {
+      client.release();
+      throw new Error("Post not found");
+    }
+
+    const authorId = postResult.rows[0].author_id;
+
+    const isAdmin = userRoles.includes("Admin");
+    const isOwner = authorId === currentUserId;
+
+    if (!isAdmin && !isOwner) {
+      client.release();
+      throw new Error("You do not have permission to delete this post.");
+    }
+
+    // Only delete if authorized
+    await client.query("DELETE FROM posts WHERE id = $1", [post_id]);
+
     client.release();
-    return result.rows;
+    return { success: true };
   } catch (error) {
     console.error("Error deleting post:", error);
-    return 0;
+    return { success: false, error: error.message };
   }
 }
 

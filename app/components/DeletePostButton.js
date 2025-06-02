@@ -16,6 +16,7 @@ export default function DeletePostButton({
 
   if (!canDelete) return null;
 
+  //if youre an admin you should be able the only one that can delete post that's not your own
   return (
     <button
       onClick={(e) => {
