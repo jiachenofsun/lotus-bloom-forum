@@ -7,6 +7,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: black;
+  font-size: 1.3rem;
 }
 
 .selectionGrid {
@@ -24,7 +26,7 @@
   border-style: solid; /* This is required to make the border visible */
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 250px;
+  height: 150px;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
@@ -37,7 +39,7 @@
 
 .siteTitle {
   font-size: 1.5rem;
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .siteDescription {

@@ -10,6 +10,7 @@ export default async function SitePage({ params, searchParams }) {
   const p = await params;
   const sp = await searchParams;
   const site = p.site;
+  const currentSite = p.site;
   const currentPage = Number(sp?.page) || 1;
   const pageSize = 10;
 
@@ -32,18 +33,26 @@ export default async function SitePage({ params, searchParams }) {
     <div>
       <div className={styles.wholePage}>
         <div className={styles.sidebar}>
-          <h1 className={styles.h1}>General</h1>
+          <h1 className={styles.h1}>
+            {sites.find((s) => s.url === site)?.name}
+          </h1>
           <NewPostButton site={site} />
           <div className={styles.navButtons}>
-            {sites.map((site) => (
-              <Link
-                key={site.url}
-                href={`/site/${site.url}`}
-                className={styles.navButton}
-              >
-                {site.name}
-              </Link>
-            ))}
+            {sites.map((s) => {
+              const isActive = s.url === currentSite;
+              return (
+                <Link
+                  key={s.url}
+                  href={`/site/${s.url}`}
+                  className={
+                    `${styles.navButton}` +
+                    (isActive ? ` ${styles.navButtonActive}` : ``)
+                  }
+                >
+                  {s.name}
+                </Link>
+              );
+            })}
           </div>
         </div>
         <div className={styles.postList}>

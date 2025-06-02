@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import styles from "./LotusBloomHeader.module.css";
+import Link from "next/link";
 
 export default function LotusBloomHeader() {
   const [tocOpen, setTocOpen] = useState(false);
@@ -16,14 +17,18 @@ export default function LotusBloomHeader() {
       {/* HEADER */}
       <header className={styles.header}>
         <div className={styles.logoContainer}>
-          <Image
-            src="/LotusBloomLogo.png"
-            alt="Lotus Bloom Logo"
-            width={100}
-            height={35}
-            style={{ height: "auto" }}
-          />
-          <h1 className={styles.title}>Lotus Bloom</h1>
+          <Link href="/site-selection">
+            <Image
+              src="/LotusBloomLogo.png"
+              alt="Lotus Bloom Logo"
+              width={100}
+              height={35}
+              style={{ height: "auto" }}
+            />
+          </Link>
+          <Link href="/site-selection">
+            <h1 className={styles.title}>Lotus Bloom</h1>
+          </Link>
         </div>
 
         <div className={styles.menuIconContainer} onClick={toggleTOC}>
@@ -58,16 +63,20 @@ export default function LotusBloomHeader() {
           <ul className={styles.tocList}>
             <li>
               <a
-                href="#about-us"
+                href="/edit-roles"
                 className={styles.tocLink}
                 onClick={toggleTOC}
               >
-                About Us...
+                Edit Role
               </a>
             </li>
             <li>
-              <a href="#contact" className={styles.tocLink} onClick={toggleTOC}>
-                Contact Us!
+              <a
+                href="#/edit-all-roles"
+                className={styles.tocLink}
+                onClick={toggleTOC}
+              >
+                Edit All Roles *ADMIN ONLY*
               </a>
             </li>
           </ul>

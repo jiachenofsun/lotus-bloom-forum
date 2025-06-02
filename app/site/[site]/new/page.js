@@ -3,6 +3,8 @@ import styles from "./page.module.css";
 import { getSession } from "@auth0/nextjs-auth0";
 import { addPost, addPostImages, deletePost } from "@/app/actions/db-actions";
 import PostForm from "@/app/components/PostForm";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function NewPostPage({ params }) {
   const p = await params;
@@ -44,9 +46,22 @@ export default async function NewPostPage({ params }) {
   }
 
   return (
-    <div>
-      <div className={styles.container}>
-        <PostForm user={user} site={site} handleSubmit={handleSubmit} />
+    <div className={styles.outerContainer}>
+      <div className={styles.pageContainer}>
+        <div className={styles.links}>
+          <div className={styles.backButton}>
+            <a className={styles.backParent} href={`/site/${site}`}>
+              <Image src={"/back2.svg"} alt="Back" width={40} height={40} />
+              <h1>Back</h1>
+            </a>
+          </div>
+        </div>
+
+        <div className={styles.flexContainer}>
+          <div className={styles.textbox}>
+            <PostForm user={user} site={site} handleSubmit={handleSubmit} />
+          </div>
+        </div>
       </div>
     </div>
   );
