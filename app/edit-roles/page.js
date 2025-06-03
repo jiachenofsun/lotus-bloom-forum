@@ -2,20 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { assignRoleSelf, getUserRoles } from "../actions/role-actions";
+import {
+  assignRoleSelf,
+  getUserRoles,
+  setUserRole,
+} from "../actions/role-actions";
 import styles from "./EditRoles.module.css";
-
-/*
- * This page allows a user to edit their roles.
- * Currently, users can only add role.
- *
- * TODO:
- * - Display the current additional role a user has, if any (Family Navigator or Admin)
- *    - next to the role, add a 'x' icon that allows the user to remove the role.
- *    - you will need to make a server action to remove the role. (in actions/role-actions.js)
- * - Add logic to make sure the user can only have one additional role at a time.
- *    - if the user already has an additional role, do not display the select box.
- */
 
 export default function EditRoles() {
   const { user, isLoading } = useUser();
@@ -38,7 +30,6 @@ export default function EditRoles() {
             console.error("Failed to fetch roles");
           }
         } catch (error) {
-          e;
           console.error("Error fetching roles:", error);
         } finally {
           setLoadingRoles(false);
@@ -65,7 +56,6 @@ export default function EditRoles() {
     setStatus("Requesting role assignment...");
 
     try {
-      // Call the server action
       const result = await assignRoleSelf(selectedRole);
 
       if (!result.success) {
@@ -76,6 +66,37 @@ export default function EditRoles() {
         `Success! The ${selectedRole} role has been assigned to your account.`,
       );
       setSelectedRole("");
+
+      const updatedRoles = await getUserRoles(user);
+      if (updatedRoles) {
+        setUserRoles(updatedRoles);
+      }
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRemoveRole = async (roleToRemove) => {
+    setIsSubmitting(true);
+    setStatus(`Removing ${roleToRemove} role...`);
+
+    try {
+      const result = await setUserRole(user.sub, "None");
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to remove role");
+      }
+
+      setStatus(
+        `Success! The ${roleToRemove} role has been removed from your account.`,
+      );
+
+      const updatedRoles = await getUserRoles(user);
+      if (updatedRoles) {
+        setUserRoles(updatedRoles);
+      }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
     } finally {
@@ -92,7 +113,12 @@ export default function EditRoles() {
   // Check if the user email has the required domain for Admin role
   const isEligibleForAdmin =
     user.email && user.email.endsWith("@lotusbloomfamily.org");
-  true;
+
+  const additionalRoles = userRoles.filter(
+    (role) => role === "Family Navigator" || role === "Admin",
+  );
+
+  const hasAdditionalRole = additionalRoles.length > 0;
 
   return (
     <div className={styles.container}>
@@ -111,37 +137,69 @@ export default function EditRoles() {
                 ? userRoles.join(", ")
                 : "No additional roles"}
           </p>
+
+          {/* Display additional roles with remove buttons */}
+          {additionalRoles.length > 0 && (
+            <div className={styles.currentRoles}>
+              <strong>Additional Roles:</strong>
+              <div className={styles.rolesList}>
+                {additionalRoles.map((role) => (
+                  <div key={role} className={styles.roleItem}>
+                    <span>{role}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveRole(role)}
+                      disabled={isSubmitting}
+                      className={styles.removeButton}
+                      aria-label={`Remove ${role} role`}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Select an additional role:</label>
-            <select
-              value={selectedRole}
-              onChange={handleRoleChange}
-              className={styles.select}
-              disabled={isSubmitting}
-            >
-              <option value="">-- Select a role --</option>
-              <option value="Family Navigator">Family Navigator</option>
-              {isEligibleForAdmin && <option value="Admin">Admin</option>}
-            </select>
-            {!isEligibleForAdmin && (
-              <p className={styles.note}>
-                Note: Admin role is only available for @lotusbloomfamily.org
-                email addresses
-              </p>
-            )}
-          </div>
+        {!hasAdditionalRole && (
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Select an additional role:</label>
+              <select
+                value={selectedRole}
+                onChange={handleRoleChange}
+                className={styles.select}
+                disabled={isSubmitting}
+              >
+                <option value="">-- Select a role --</option>
+                <option value="Family Navigator">Family Navigator</option>
+                {isEligibleForAdmin && <option value="Admin">Admin</option>}
+              </select>
+              {!isEligibleForAdmin && (
+                <p className={styles.note}>
+                  Note: Admin role is only available for @lotusbloomfamily.org
+                  email addresses
+                </p>
+              )}
+            </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting || !selectedRole}
-            className={styles.button}
-          >
-            {isSubmitting ? "Processing..." : "Assign Role"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={isSubmitting || !selectedRole}
+              className={styles.button}
+            >
+              {isSubmitting ? "Processing..." : "Assign Role"}
+            </button>
+          </form>
+        )}
+
+        {hasAdditionalRole && !isSubmitting && (
+          <p className={styles.info}>
+            You already have an additional role. Remove your current role to
+            assign a different one.
+          </p>
+        )}
 
         {status && (
           <div

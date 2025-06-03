@@ -5,6 +5,27 @@ import { ManagementClient } from "auth0";
 import { cache } from "react";
 import axios from "axios";
 
+/* Gets a token from Auth0 for deleting roles */
+const getManagementToken = async () => {
+  const response = await axios.post(
+    `https://${process.env.AUTH0_DOMAIN}/oauth/token`,
+    {
+      client_id: process.env.AUTH0_CLIENT_ID,
+      client_secret: process.env.AUTH0_CLIENT_SECRET,
+      audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
+      grant_type: "client_credentials",
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  console.log(response.data);
+  return response.data.access_token;
+};
+
 export async function setUserRole(userId, roleType) {
   try {
     const auth0 = new ManagementClient({
@@ -18,11 +39,13 @@ export async function setUserRole(userId, roleType) {
     const roleIds = currentRoles.data.map((role) => role.id);
 
     if (roleIds.length > 0) {
+      const token = await getManagementToken();
+      console.log("token", token);
       await axios.delete(
         `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}/roles`,
         {
           headers: {
-            Authorization: `Bearer ${process.env.AUTH0_DELETE_ROLES_TOKEN}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           data: {
