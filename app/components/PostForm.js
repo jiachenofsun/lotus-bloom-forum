@@ -32,7 +32,6 @@ export default function PostForm({
 
       // If submission was successful (no error), mark images as used
       if (!result?.error && markImagesAsUsedRef.current) {
-        console.log(successMessage + ", marking images as used");
         markImagesAsUsedRef.current();
       }
 

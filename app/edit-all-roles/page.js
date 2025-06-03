@@ -35,8 +35,6 @@ export default function EditAllRoles() {
 
   if (isLoading) return <div>Loading...</div>;
 
-  console.log("users", users);
-
   return (
     <div className={styles.container}>
       <div className={styles.innerContainer}>

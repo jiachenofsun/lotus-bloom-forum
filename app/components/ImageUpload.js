@@ -56,17 +56,15 @@ export default function ImageUpload({
   useEffect(() => {
     const cleanup = async () => {
       if (!shouldCleanupRef.current) {
-        console.log("Images marked as used, skipping cleanup");
         return;
       }
 
       const urlsToDelete = Array.from(newlyUploadedUrlsRef.current);
       if (urlsToDelete.length > 0) {
-        console.log("Cleaning up unused newly uploaded images:", urlsToDelete);
         try {
           await Promise.all(urlsToDelete.map((url) => deleteImage(url)));
         } catch (err) {
-          console.error("Cleanup failed:", err);
+          console.error("Image cleanup failed:", err);
         }
       }
     };
@@ -115,7 +113,6 @@ export default function ImageUpload({
       validFiles.push(file);
     }
 
-    console.log("validFiles", validFiles);
     setIsUploading(true);
 
     try {

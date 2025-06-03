@@ -15,7 +15,6 @@ export default function CommentTab({
   current_user,
   current_user_roles,
 }) {
-  console.log(comments);
   const [localComments, setLocalComments] = useState(comments);
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
