@@ -80,13 +80,15 @@ export default async function PostPage({ params, searchParams }) {
                     width={40}
                     height={40}
                   />
-                  <div className={styles.userBox}>
-                    <h2>{authorName} </h2>
-                    {nonStandardRole && (
-                      <div className={styles.roleTags}>
-                        {nonStandardRole.toUpperCase()}
-                      </div>
-                    )}
+                  <div>
+                    <div className={styles.userNameAndRole}>
+                      <h2>{authorName} </h2>
+                      {nonStandardRole && (
+                        <div className={styles.roleTags}>
+                          {nonStandardRole.toUpperCase()}
+                        </div>
+                      )}
+                    </div>
                     <h3>{createdAt} </h3>
                   </div>
                 </div>
