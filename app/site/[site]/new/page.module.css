@@ -21,13 +21,6 @@
   margin-bottom: 1rem;
 }
 
-.backButton h1 {
-  margin-left: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #000000;
-}
-
 .flexContainer {
   display: flex;
   gap: 1rem;
@@ -43,4 +36,10 @@
   border-radius: 6px;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.backParent:hover {
+  background-color: #ad7fa5;
+  transform: translateY(-2px);
 }

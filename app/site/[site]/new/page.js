@@ -52,7 +52,7 @@ export default async function NewPostPage({ params }) {
           <div className={styles.backButton}>
             <a className={styles.backParent} href={`/site/${site}`}>
               <Image src={"/back2.svg"} alt="Back" width={40} height={40} />
-              <h1>Back</h1>
+              Back
             </a>
           </div>
         </div>

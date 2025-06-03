@@ -15,11 +15,21 @@
   margin-bottom: 1rem;
 }
 
-.backButton h1 {
-  margin-left: 0.5rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #000000;
+.backParent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #c69cc0;
+  border: 1px solid #d1c9e8;
+  border-radius: 6px;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.backParent:hover {
+  background-color: #ad7fa5;
+  transform: translateY(-2px);
 }
 
 .flexContainer {
@@ -152,16 +162,6 @@
   margin: 0;
   font-size: 0.85rem;
   color: #7f7a94;
-}
-.backParent {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background-color: #c69cc0;
-  border: 1px solid #d1c9e8;
-  border-radius: 6px;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
 }
 
 .links {
