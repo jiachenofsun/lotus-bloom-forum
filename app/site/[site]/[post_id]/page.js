@@ -23,9 +23,11 @@ export default async function PostPage({ params, searchParams }) {
   const session = await getSession(); // server-side auth
   const { user } = session;
   const current_user_roles = await getUserRoles(user);
-  const userId = user?.sub;
+  const current_user_id = user?.sub;
 
-  const isLiked = userId ? await getIfUserLikedPost(post_id, userId) : false;
+  const isLiked = current_user_id
+    ? await getIfUserLikedPost(post_id, current_user_id)
+    : false;
   const currentPage = Number(sp?.page) || 1;
   const pageSize = 10;
 
@@ -94,6 +96,7 @@ export default async function PostPage({ params, searchParams }) {
                     postId={post_id}
                     isInitiallyLiked={isLiked}
                     initialLikeCount={num_likes}
+                    current_user_id={current_user_id}
                   />
                 </div>
               </div>

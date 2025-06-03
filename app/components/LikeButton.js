@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import redHeart from "@/public/redheart.png";
-import blackHeart from "@/public/heart.png";
+import { addReaction, removeReaction } from "@/app/actions/db-actions";
 
 export default function LikeButton({
   postId,
   isInitiallyLiked,
   initialLikeCount,
+  current_user_id,
 }) {
   const [liked, setLiked] = useState(isInitiallyLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
@@ -22,13 +21,14 @@ export default function LikeButton({
     setLiked(newLiked);
     setLikeCount((prev) => prev + (newLiked ? 1 : -1)); // optimistic update
 
-    const res = await fetch("/api/reactions", {
-      method: newLiked ? "POST" : "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ post_id: postId }),
-    });
+    let res;
+    if (newLiked) {
+      res = await addReaction(postId, current_user_id);
+    } else {
+      res = await removeReaction(postId, current_user_id);
+    }
 
-    if (!res.ok) {
+    if (!res.success) {
       console.error("Reaction failed");
       setLiked(!newLiked);
       setLikeCount((prev) => prev - (newLiked ? 1 : -1));
@@ -42,12 +42,18 @@ export default function LikeButton({
       onClick={toggleLike}
       style={{ cursor: "pointer", textAlign: "center" }}
     >
-      <Image
-        src={liked ? redHeart : blackHeart}
-        alt="Like"
+      <svg
         width={25}
         height={25}
-      />
+        viewBox="0 0 24 24"
+        fill={liked ? "#ef4444" : "none"}
+        stroke={liked ? "#ef4444" : "#000000"}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
       <p style={{ margin: 0 }}>{likeCount}</p>
     </div>
   );
