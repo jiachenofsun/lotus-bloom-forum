@@ -164,6 +164,7 @@ export async function getPostById(post_id) {
 export async function deletePost(post_id) {
   try {
     const client = await pool.connect();
+
     const result = await client.query("DELETE FROM posts WHERE id = $1", [
       post_id,
     ]);

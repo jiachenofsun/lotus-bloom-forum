@@ -8,9 +8,13 @@ export default function DiscussionBoardPost({
   name,
   title,
   roles,
+  author_id,
+  current_user_id,
+  current_user_roles,
   post_id,
 }) {
   const nonStandardRole = roles?.find((role) => role !== "Standard");
+  const isCurrentUserAdmin = current_user_roles.includes("Admin");
 
   return (
     <div className={styles.postWrapper}>
@@ -25,10 +29,18 @@ export default function DiscussionBoardPost({
         </div>
         <div className={styles.postTitle}>{title}</div>
       </Link>
-      <div className={styles.editdelete}>
-        <DeletePostButton post_id={post_id} />
-        <EditPostButton site={site} post_id={post_id} />
-      </div>
+      {/* Only display edit delete buttons if authorized */}
+      {(isCurrentUserAdmin || current_user_id === author_id) && (
+        <div className={styles.editdelete}>
+          <DeletePostButton
+            post_id={post_id}
+            author_id={author_id}
+            current_user_id={current_user_id}
+            current_user_roles={current_user_roles}
+          />
+          <EditPostButton site={site} post_id={post_id} />
+        </div>
+      )}
     </div>
   );
 }
