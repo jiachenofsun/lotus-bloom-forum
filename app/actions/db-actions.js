@@ -184,6 +184,36 @@ export async function deletePost(post_id) {
   }
 }
 
+export async function getNumLikes(post_id) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      "SELECT COUNT(*) FROM post_reactions WHERE post_id = $1",
+      [post_id],
+    );
+    client.release();
+    return parseInt(result.rows[0].count, 10);
+  } catch (error) {
+    console.error("Error getting number of likes:", error);
+    return 0;
+  }
+}
+
+export async function getIfUserLikedPost(post_id, reactor_id) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      `SELECT 1 FROM post_reactions WHERE post_id = $1 AND reactor_id = $2 LIMIT 1`,
+      [post_id, reactor_id],
+    );
+    client.release();
+    return result.rowCount > 0;
+  } catch (error) {
+    console.error("Error getting if user liked post:", error);
+    return false;
+  }
+}
+
 export async function getComments(postid, page = 1, pageSize = 10) {
   try {
     const client = await pool.connect();
@@ -257,5 +287,37 @@ export async function editComments(id, text) {
   } catch (error) {
     console.error("Error fetching posts:", error);
     return [];
+  }
+}
+
+export async function addReaction(post_id, reactor_id) {
+  try {
+    const client = await pool.connect();
+    await client.query(
+      `INSERT INTO post_reactions (post_id, reactor_id)
+       VALUES ($1, $2)
+       ON CONFLICT DO NOTHING`,
+      [post_id, reactor_id],
+    );
+    client.release();
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding reaction:", error);
+    return { success: false, error };
+  }
+}
+
+export async function removeReaction(post_id, reactor_id) {
+  try {
+    const client = await pool.connect();
+    await client.query(
+      `DELETE FROM post_reactions WHERE post_id = $1 AND reactor_id = $2`,
+      [post_id, reactor_id],
+    );
+    client.release();
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing reaction:", error);
+    return { success: false, error };
   }
 }
