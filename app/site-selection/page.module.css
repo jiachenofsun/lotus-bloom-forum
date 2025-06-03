@@ -7,6 +7,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: black;
+  font-size: 1.3rem;
 }
 
 .selectionGrid {
@@ -21,10 +23,10 @@
   background-color: #c69cc0;
   border-width: 1px;
   border-color: #8c4799;
-  border-style: solid; /* This is required to make the border visible */
+  border-style: solid;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 250px;
+  height: 150px;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
@@ -33,11 +35,17 @@
   text-align: center;
   padding: 20px;
   color: black;
+  transition: all 0.3s ease;
+}
+
+.site:hover {
+  background-color: #ad7fa5;
+  transform: translateY(-2px);
 }
 
 .siteTitle {
   font-size: 1.5rem;
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .siteDescription {

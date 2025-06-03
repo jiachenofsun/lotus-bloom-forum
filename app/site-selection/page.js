@@ -77,7 +77,7 @@ export default function SiteSelection() {
   return (
     <div className={styles.page}>
       {userName.current && <p>Welcome, {userName.current}!</p>}
-      <h1 className={styles.title}>Select a Site!</h1>
+      <h1 className={styles.title}>Select a Site</h1>
       <div className={styles.selectionGrid}>
         {sites.map((site) => (
           <Link key={site.url} href={`/site/${site.url}`}>

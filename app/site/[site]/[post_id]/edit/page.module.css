@@ -1,9 +1,16 @@
-.container {
+.outerContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
   background: linear-gradient(to bottom, #ffffff, #36b0c8);
-  padding: 3rem 1rem;
-  height: 100vh;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  box-sizing: border-box;
   margin-top: 74px;
 }
 
@@ -51,4 +58,34 @@
 
 .submitButton:hover {
   background-color: #a05bb3;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.flexContainer {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.backParent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #c69cc0;
+  border: 1px solid #d1c9e8;
+  border-radius: 6px;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.backParent:hover {
+  background-color: #ad7fa5;
+  transform: translateY(-2px);
 }

@@ -26,6 +26,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-direction: row;
 }
 
 .title {
@@ -53,8 +54,7 @@
 }
 
 .toc {
-  background-color: #784692;
-
+  background-color: #c69cc0;
   width: 320px;
   padding: 2rem;
   padding-top: 5rem;
@@ -67,16 +67,24 @@
 }
 
 .tocTitle {
-  margin-top: 0;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .tocList {
   list-style: none;
-  padding: 0;
 }
 
 .tocLink {
-  text-decoration: none;
+  margin-bottom: 10px;
+  background-color: #b685ae;
+  border-radius: 5px;
+  padding: 10px;
   color: #000000;
   font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.tocLink:hover {
+  background-color: #ad7fa5;
 }

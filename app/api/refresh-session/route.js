@@ -10,8 +10,6 @@ export async function POST(request) {
       return NextResponse.json({ error: "No session found" }, { status: 401 });
     }
 
-    console.log("Current session user:", session.user.name);
-
     // For App Router, we need to use a different approach
     // Create a response that we'll modify
     const response = new NextResponse(JSON.stringify({ success: true }), {

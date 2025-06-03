@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import styles from "./LotusBloomHeader.module.css";
+import Link from "next/link";
 
 export default function LotusBloomHeader() {
   const [tocOpen, setTocOpen] = useState(false);
@@ -16,14 +17,18 @@ export default function LotusBloomHeader() {
       {/* HEADER */}
       <header className={styles.header}>
         <div className={styles.logoContainer}>
-          <Image
-            src="/LotusBloomLogo.png"
-            alt="Lotus Bloom Logo"
-            width={100}
-            height={35}
-            style={{ height: "auto" }}
-          />
-          <h1 className={styles.title}>Lotus Bloom</h1>
+          <Link href="/site-selection">
+            <Image
+              src="/LotusBloomLogo.png"
+              alt="Lotus Bloom Logo"
+              width={100}
+              height={35}
+              style={{ height: "auto" }}
+            />
+          </Link>
+          <Link href="/site-selection">
+            <h1 className={styles.title}>Lotus Bloom</h1>
+          </Link>
         </div>
 
         <div className={styles.menuIconContainer} onClick={toggleTOC}>
@@ -56,19 +61,25 @@ export default function LotusBloomHeader() {
         >
           <h2 className={styles.tocTitle}>Table of Contents</h2>
           <ul className={styles.tocList}>
-            <li>
-              <a
-                href="#about-us"
-                className={styles.tocLink}
-                onClick={toggleTOC}
-              >
-                About Us...
-              </a>
+            <li
+              className={styles.tocLink}
+              onClick={() => {
+                window.location.href = "/edit-roles";
+                toggleTOC();
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              Edit Roles
             </li>
-            <li>
-              <a href="#contact" className={styles.tocLink} onClick={toggleTOC}>
-                Contact Us!
-              </a>
+            <li
+              className={styles.tocLink}
+              onClick={() => {
+                window.location.href = "/edit-all-roles";
+                toggleTOC();
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              Edit All Roles *ADMIN ONLY*
             </li>
           </ul>
         </div>
