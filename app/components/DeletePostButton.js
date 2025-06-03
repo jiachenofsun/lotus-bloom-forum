@@ -3,20 +3,7 @@
 import styles from "./DeletePostButton.module.css";
 import { deletePost } from "../actions/db-actions";
 
-export default function DeletePostButton({
-  post_id,
-  author_id,
-  currentUserId,
-  userRoles = [],
-}) {
-  const isAdmin = userRoles.includes("Admin");
-  const isOwner = author_id === currentUserId;
-
-  const canDelete = isAdmin || isOwner;
-
-  if (!canDelete) return null;
-
-  //if youre an admin you should be able the only one that can delete post that's not your own
+export default function DeletePostButton({ post_id }) {
   return (
     <button
       onClick={(e) => {

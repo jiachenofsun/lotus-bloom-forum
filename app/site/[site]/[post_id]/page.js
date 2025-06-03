@@ -2,8 +2,9 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import CommentTab from "@/app/components/CommentTab";
 import { getPostById, getComments } from "@/app/actions/db-actions";
-import { getUserDetails } from "@/app/actions/role-actions";
+import { getUserDetails, getUserRoles } from "@/app/actions/role-actions";
 import Link from "next/link";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function PostPage({ params, searchParams }) {
   const p = await params;
@@ -38,6 +39,11 @@ export default async function PostPage({ params, searchParams }) {
       return { ...comment, userName, userRoles };
     }),
   );
+
+  // get current user's details
+  const session = await getSession();
+  const { user } = session;
+  const current_user_roles = await getUserRoles(user);
 
   return (
     <div>
@@ -78,7 +84,12 @@ export default async function PostPage({ params, searchParams }) {
           </div>
 
           <div className={styles.commentsSection}>
-            <CommentTab comments={commentsWithName} postid={post_id} />
+            <CommentTab
+              comments={commentsWithName}
+              postid={post_id}
+              current_user={user}
+              current_user_roles={current_user_roles}
+            />
 
             {/* Pagination Controls */}
             <div className={styles.pagination}>

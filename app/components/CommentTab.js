@@ -8,18 +8,26 @@ import {
   deleteComments,
   editComments,
 } from "@/app/actions/db-actions";
-import { useUser } from "@auth0/nextjs-auth0/client";
 
-export default function CommentTab({ comments, postid }) {
+export default function CommentTab({
+  comments,
+  postid,
+  current_user,
+  current_user_roles,
+}) {
+  console.log(comments);
   const [localComments, setLocalComments] = useState(comments);
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState("");
-  const { user } = useUser();
 
   async function handleSubmit() {
     if (newComment.trim() === "") return;
-    const result = await postComments(postid, user.sub, newComment.trim());
+    const result = await postComments(
+      postid,
+      current_user.sub,
+      newComment.trim(),
+    );
     if (result.length > 0) {
       const newPostedComment = result[0];
 
@@ -27,8 +35,8 @@ export default function CommentTab({ comments, postid }) {
         ...prev,
         {
           ...newPostedComment,
-          userName: user.name,
-          userRoles: ["Standard"],
+          userName: current_user.name,
+          userRoles: current_user_roles,
           created_at: new Date(newPostedComment.created_at),
         },
       ]);
@@ -79,6 +87,8 @@ export default function CommentTab({ comments, postid }) {
     if (e.key === "Enter") handleSubmit();
   };
 
+  const isCurrentUserAdmin = current_user_roles.includes("Admin");
+
   return (
     <div className={styles.commentTabContainer}>
       <h2 className={styles.header}>Comments</h2>
@@ -118,30 +128,36 @@ export default function CommentTab({ comments, postid }) {
                   </div>
                   <div className={styles.commentDateAndButtons}>
                     <h4>{comment.created_at.toDateString()}</h4>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleDelete(comment.id)}
-                    >
-                      <Image
-                        src="/x.png"
-                        alt="Delete"
-                        width={24}
-                        height={24}
-                        className={styles.deleteIcon}
-                      />
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => handleEdit(comment)}
-                    >
-                      <Image
-                        src="/pencil.png"
-                        alt="Edit"
-                        width={24}
-                        height={24}
-                        className={styles.deleteIcon}
-                      />
-                    </button>
+                    {/* Only display edit delete buttons if authorized */}
+                    {(isCurrentUserAdmin ||
+                      comment.author_id === current_user.sub) && (
+                      <>
+                        <button
+                          className={styles.deleteButton}
+                          onClick={() => handleDelete(comment.id)}
+                        >
+                          <Image
+                            src="/x.png"
+                            alt="Delete"
+                            width={24}
+                            height={24}
+                            className={styles.deleteIcon}
+                          />
+                        </button>
+                        <button
+                          className={styles.deleteButton}
+                          onClick={() => handleEdit(comment)}
+                        >
+                          <Image
+                            src="/pencil.png"
+                            alt="Edit"
+                            width={24}
+                            height={24}
+                            className={styles.deleteIcon}
+                          />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
                 {editingCommentId === comment.id ? (

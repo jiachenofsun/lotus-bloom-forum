@@ -15,7 +15,10 @@ export default async function SitePage({ params, searchParams }) {
   const currentPage = Number(sp?.page) || 1;
   const pageSize = 10;
   const session = await getSession();
-  const userRoles = session?.user ? await getUserRoles(session.user) : [];
+  const current_user_id = session?.user?.sub;
+  const current_user_roles = session?.user
+    ? await getUserRoles(session.user)
+    : [];
 
   const {
     posts,
@@ -28,7 +31,7 @@ export default async function SitePage({ params, searchParams }) {
       const { name: userName, roles: userRoles } = await getUserDetails(
         post.author_id,
       );
-      return { ...post, userName, userRoles };
+      return { ...post, userName, userRoles, userId: post.author_id };
     }),
   );
 
@@ -37,7 +40,7 @@ export default async function SitePage({ params, searchParams }) {
       <div className={styles.wholePage}>
         <div className={styles.sidebar}>
           <h1 className={styles.h1}>General</h1>
-          <NewPostButton site={site} userRoles={userRoles} />
+          <NewPostButton site={site} current_user_roles={current_user_roles} />
           <div className={styles.navButtons}>
             {sites.map((site) => (
               <Link
@@ -64,6 +67,9 @@ export default async function SitePage({ params, searchParams }) {
                 name={post.userName}
                 title={post.title}
                 roles={post.userRoles}
+                author_id={post.author_id}
+                current_user_id={current_user_id}
+                current_user_roles={current_user_roles}
                 post_id={post.id}
               />
             ))

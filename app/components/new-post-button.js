@@ -1,8 +1,8 @@
 import styles from "./buttons.module.css";
 
-export default function NewPostButton({ site, userRoles }) {
-  const isAdmin = userRoles.includes("Lotus Bloom Admin");
-  const isFamilyNavigator = userRoles.includes("Family Navigator");
+export default function NewPostButton({ site, current_user_roles }) {
+  const isAdmin = current_user_roles.includes("Admin");
+  const isFamilyNavigator = current_user_roles.includes("Family Navigator");
 
   const canPost =
     isAdmin ||

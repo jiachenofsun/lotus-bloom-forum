@@ -85,7 +85,6 @@ export async function listUsers() {
     });
 
     const userRoles = await getUserRoles(session.user);
-    console.log("userRoles:", userRoles);
 
     const isAdmin = userRoles.includes("Admin");
 
