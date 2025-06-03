@@ -61,23 +61,25 @@ export default function LotusBloomHeader() {
         >
           <h2 className={styles.tocTitle}>Table of Contents</h2>
           <ul className={styles.tocList}>
-            <li>
-              <a
-                href="/edit-roles"
-                className={styles.tocLink}
-                onClick={toggleTOC}
-              >
-                Edit Role
-              </a>
+            <li
+              className={styles.tocLink}
+              onClick={() => {
+                window.location.href = "/edit-roles";
+                toggleTOC();
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              Edit Roles
             </li>
-            <li>
-              <a
-                href="#/edit-all-roles"
-                className={styles.tocLink}
-                onClick={toggleTOC}
-              >
-                Edit All Roles *ADMIN ONLY*
-              </a>
+            <li
+              className={styles.tocLink}
+              onClick={() => {
+                window.location.href = "/edit-all-roles";
+                toggleTOC();
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              Edit All Roles *ADMIN ONLY*
             </li>
           </ul>
         </div>

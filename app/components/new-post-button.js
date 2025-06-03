@@ -6,7 +6,11 @@ export default function NewPostButton({ site, current_user_roles }) {
 
   const canPost =
     isAdmin ||
-    (site !== "family-navigation" && site !== "lotus-bloom-general") ||
+    ![
+      "family-navigation",
+      "family-navigation-network",
+      "lotus-bloom-general",
+    ].includes(site) ||
     isFamilyNavigator;
 
   return (

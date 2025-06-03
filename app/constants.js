@@ -29,4 +29,10 @@ export const sites = [
     description: "",
     // "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
   },
+  {
+    name: "Family Navigation Network",
+    url: "family-navigation-network",
+    description: "",
+    // "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+  },
 ];

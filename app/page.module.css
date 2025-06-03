@@ -45,6 +45,11 @@
   margin-bottom: 20px;
 }
 
+.additionalInfo {
+  margin-top: 20px;
+  color: grey;
+}
+
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   a.primary:hover {

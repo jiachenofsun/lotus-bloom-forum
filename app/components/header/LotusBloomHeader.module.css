@@ -72,13 +72,19 @@
 }
 
 .tocList {
-  margin-bottom: 10px;
   list-style: none;
 }
 
 .tocLink {
   margin-bottom: 10px;
-  text-decoration: none;
+  background-color: #b685ae;
+  border-radius: 5px;
+  padding: 10px;
   color: #000000;
   font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.tocLink:hover {
+  background-color: #ad7fa5;
 }
